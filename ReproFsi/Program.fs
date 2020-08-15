@@ -5,15 +5,29 @@ open FSharp.Compiler.Interactive.Shell
 let smallLambda = fun x -> let p = x
                            p
 
-let code = """
+let smallLambda2 =
+    fun x ->
+        let p = x
+        p
+
+let codeSmallLambda = """
 let smallLambda = fun x -> let p = x
                            p
+
+"""
+
+// this works in F# Interactive window
+let codeSmallLambda2 = """
+let smallLambda2 =
+    fun x ->
+        let p = x
+        p
 """
 
 [<EntryPoint>]
 let main argv =
 
-    printfn "try compiling %A" smallLambda
+    printfn "smallLambda: %A , smallLambda2: %A" smallLambda smallLambda2
 
     let sbOut = StringBuilder()
     let sbErr = StringBuilder()
@@ -29,7 +43,19 @@ let main argv =
         session.EvalInteractionNonThrowing "#indent \"off\";;" |> ignore
         session
 
-    let evalresult, errors = fsi.EvalExpressionNonThrowing(code)
+    printfn "TEST: %s" codeSmallLambda
+
+    let evalresult, errors = fsi.EvalExpressionNonThrowing(codeSmallLambda)
+
+    match evalresult with
+    | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
+    | Choice2Of2(e) -> printfn "%A" e
+
+    errors |> Array.map (printfn "%A") |> ignore
+
+    printfn "TEST: %s" codeSmallLambda2
+
+    let evalresult, errors = fsi.EvalExpressionNonThrowing(codeSmallLambda2)
 
     match evalresult with
     | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
