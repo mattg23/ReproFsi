@@ -33,7 +33,7 @@ let main argv =
     let sbErr = StringBuilder()
 
     let fsi =
-        let inStream = new StringReader("")
+        let inStream = new StringReader "" 
         let outStream = new StringWriter(sbOut)
         let errStream = new StringWriter(sbErr)
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()       
@@ -45,7 +45,7 @@ let main argv =
 
     printfn "TEST: %s" codeSmallLambda
 
-    let evalresult, errors = fsi.EvalExpressionNonThrowing(codeSmallLambda)
+    let evalresult, errors = fsi.EvalExpressionNonThrowing codeSmallLambda 
 
     match evalresult with
     | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
@@ -55,7 +55,7 @@ let main argv =
 
     printfn "TEST: %s" codeSmallLambda2
 
-    let evalresult, errors = fsi.EvalExpressionNonThrowing(codeSmallLambda2)
+    let evalresult, errors = fsi.EvalExpressionNonThrowing codeSmallLambda2 
 
     match evalresult with
     | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
