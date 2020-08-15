@@ -24,10 +24,10 @@ let main argv =
         let errStream = new StringWriter(sbErr)
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()       
         let argv = [| "fsi.exe"; "--noninteractive"; "--quiet";"--nologo";"--langversion:latest" |]
-        let fsi_noloaded = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, errStream)
-        fsi_noloaded.EvalInteractionNonThrowing "open System;;" |> ignore
-        fsi_noloaded.EvalInteractionNonThrowing "#indent \"off\";;" |> ignore
-        fsi_noloaded
+        let session = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, errStream)
+        session.EvalInteractionNonThrowing "open System;;" |> ignore
+        session.EvalInteractionNonThrowing "#indent \"off\";;" |> ignore
+        session
 
     let evalresult, errors = fsi.EvalExpressionNonThrowing(code)
 
