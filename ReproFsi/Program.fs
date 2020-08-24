@@ -5,7 +5,7 @@ open FSharp.Compiler.Interactive.Shell
 let smallLambda = fun x -> let p = x
                            p
 
-let smallLambda2 =
+let smallLambda2 =    
     fun x ->
         let p = x
         p
@@ -18,8 +18,8 @@ let smallLambda = fun x -> let p = x
 
 // this works in F# Interactive window
 let codeSmallLambda2 = """
-let smallLambda2 =
-    fun x ->
+let smallLambda2 =    
+    fun x -> x
         let p = x
         p
 """
@@ -43,7 +43,7 @@ let main argv =
         session.EvalInteractionNonThrowing "#indent \"off\";;" |> ignore
         session
 
-    printfn "TEST: %s" codeSmallLambda
+    printfn "TEST (EvalExpressionNonThrowing): %s" codeSmallLambda
 
     let evalresult, errors = fsi.EvalExpressionNonThrowing codeSmallLambda 
 
@@ -53,9 +53,29 @@ let main argv =
 
     errors |> Array.map (printfn "%A") |> ignore
 
-    printfn "TEST: %s" codeSmallLambda2
+    printfn "TEST (EvalExpressionNonThrowing): %s" codeSmallLambda2
 
     let evalresult, errors = fsi.EvalExpressionNonThrowing codeSmallLambda2 
+
+    match evalresult with
+    | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
+    | Choice2Of2(e) -> printfn "%A" e
+
+    errors |> Array.map (printfn "%A") |> ignore
+
+    printfn "TEST (EvalInteractionNonThrowing): %s" codeSmallLambda
+
+    let evalresult, errors = fsi.EvalInteractionNonThrowing codeSmallLambda 
+
+    match evalresult with
+    | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
+    | Choice2Of2(e) -> printfn "%A" e
+
+    errors |> Array.map (printfn "%A") |> ignore
+
+    printfn "TEST (EvalInteractionNonThrowing): %s" codeSmallLambda2
+
+    let evalresult, errors = fsi.EvalInteractionNonThrowing codeSmallLambda2 
 
     match evalresult with
     | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
