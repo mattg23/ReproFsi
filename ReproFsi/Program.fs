@@ -19,7 +19,7 @@ let smallLambda = fun x -> let p = x
 // this works in F# Interactive window
 let codeSmallLambda2 = """
 let smallLambda2 =    
-    fun x -> x
+    fun x ->
         let p = x
         p
 """
@@ -42,34 +42,19 @@ let main argv =
         session.EvalInteractionNonThrowing "open System;;" |> ignore
         session
 
-    printfn "#indent \"off\";;"    
-    fsi.EvalInteractionNonThrowing "#indent \"off\";;" |> ignore
+    //printfn "#indent \"off\";;"    
+    //fsi.EvalInteractionNonThrowing "#indent \"off\";;" |> ignore
 
-    printfn "TEST (EvalExpressionNonThrowing): %s" codeSmallLambda
-
-    let evalresult, errors = fsi.EvalExpressionNonThrowing codeSmallLambda 
-
-    match evalresult with
-    | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
-    | Choice2Of2(e) -> printfn "%A" e
-
-    errors |> Array.map (printfn "%A") |> ignore
-
-    printfn "TEST (EvalExpressionNonThrowing): %s" codeSmallLambda2
-
-    let evalresult, errors = fsi.EvalExpressionNonThrowing codeSmallLambda2 
-
-    match evalresult with
-    | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
-    | Choice2Of2(e) -> printfn "%A" e
-
-    errors |> Array.map (printfn "%A") |> ignore
-
+    fsi.ValueBound.Add (fun (value, typ, name) -> 
+       printfn "%s was bound to %A at type %A" name value typ
+   
+    )
     printfn "TEST (EvalInteractionNonThrowing): %s" codeSmallLambda
 
     let evalresult, errors = fsi.EvalInteractionNonThrowing codeSmallLambda 
 
     match evalresult with
+    | Choice1Of2(None) -> printfn "compile successful (no value)" 
     | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
     | Choice2Of2(e) -> (printfn "%A" e)
 
@@ -80,54 +65,23 @@ let main argv =
     let evalresult, errors = fsi.EvalInteractionNonThrowing codeSmallLambda2 
 
     match evalresult with
+    | Choice1Of2(None) -> printfn "compile successful (no value)" 
     | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
     | Choice2Of2(e) -> printfn "%A" e
 
     errors |> Array.map (printfn "%A") |> ignore
 
-    printfn ""
-    printfn "#indent \"on\";;"    
-    fsi.EvalInteractionNonThrowing "#indent \"on\";;" |> ignore
+    for boundValue  in fsi.GetBoundValues() do 
+       printfn "bound value: %s is bound to %A" boundValue.Name boundValue.Value
 
-    printfn "TEST (EvalExpressionNonThrowing): %s" codeSmallLambda
-
-    let evalresult, errors = fsi.EvalExpressionNonThrowing codeSmallLambda 
+    let evalresult, errors = fsi.EvalExpressionNonThrowing "(smallLambda : int -> int)"
 
     match evalresult with
-    | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
+    | Choice1Of2(None) -> printfn "compile successful (no value)" 
+    | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A at type %A" fsiValue.ReflectionValue fsiValue.ReflectionType
     | Choice2Of2(e) -> printfn "%A" e
 
     errors |> Array.map (printfn "%A") |> ignore
 
-    printfn "TEST (EvalExpressionNonThrowing): %s" codeSmallLambda2
-
-    let evalresult, errors = fsi.EvalExpressionNonThrowing codeSmallLambda2 
-
-    match evalresult with
-    | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
-    | Choice2Of2(e) -> printfn "%A" e
-
-    errors |> Array.map (printfn "%A") |> ignore
-
-    printfn "TEST (EvalInteractionNonThrowing): %s" codeSmallLambda
-
-    let evalresult, errors = fsi.EvalInteractionNonThrowing codeSmallLambda 
-
-    match evalresult with
-    | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue |> ignore
-    | Choice1Of2(None) -> ignore()
-    | Choice2Of2(e : exn) -> printfn "%s" e.Message |> ignore
-
-    errors |> Array.map (printfn "%A") |> ignore
-
-    printfn "TEST (EvalInteractionNonThrowing): %s" codeSmallLambda2
-
-    let evalresult, errors = fsi.EvalInteractionNonThrowing codeSmallLambda2 
-
-    match evalresult with
-    | Choice1Of2(Some fsiValue) -> printfn "compile successful: %A" fsiValue
-    | Choice2Of2(e) -> printfn "%A" e
-
-    errors |> Array.map (printfn "%A") |> ignore
 
     0 // return an integer exit code
